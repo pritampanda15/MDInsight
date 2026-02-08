@@ -246,6 +246,3 @@ If you use MDInsight in your research, please cite:
 
 ---
 
-## License
-
-MIT License — use freely in academic and commercial projects.
