@@ -132,6 +132,8 @@ mdinsight run -t system.tpr -x run1.xtc run2.xtc --stride 5 --in-memory
 mdinsight info -t system.gro -x trajectory.xtc
 ```
 
+### Check the sample reports here: [sample_report](https://github.com/pritampanda15/MDInsight/tree/main/examples/sample_report.html)
+
 ### Advanced Usage
 
 ```python

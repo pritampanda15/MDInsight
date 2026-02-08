@@ -10,7 +10,7 @@ readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
 authors = [
-    {name = "MDInsight Contributors"},
+    {name = "Pritam Kumar Panda"},
 ]
 keywords = [
     "molecular-dynamics", "protein-ligand", "drug-discovery",
@@ -57,9 +57,8 @@ dev = [
 mdinsight = "mdinsight.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/mdinsight/mdinsight"
-Documentation = "https://mdinsight.readthedocs.io"
-Repository = "https://github.com/mdinsight/mdinsight"
+Homepage = "https://github.com/pritampanda15/MDInsight"
+Repository = "https://github.com/pritampanda15/MDInsight"
 
 [tool.setuptools.packages.find]
 include = ["mdinsight*"]
