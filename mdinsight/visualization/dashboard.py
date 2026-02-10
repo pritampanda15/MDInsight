@@ -251,6 +251,63 @@ class DashboardGenerator:
         )
         return fig
 
+    # ── Interaction persistence ─────────────────────────────────────
+
+    def interaction_persistence_heatmap(self, interaction_analyzer, top_n: int = 20) -> go.Figure:
+        """Heatmap of per-residue interaction presence across time bins."""
+        from collections import defaultdict
+
+        profile = interaction_analyzer.profile
+        freq = profile.per_residue_frequency
+        if not freq:
+            return go.Figure()
+
+        ranked = sorted(freq.items(), key=lambda x: max(x[1].values()), reverse=True)
+        top_residues = [r[0] for r in ranked[:top_n]]
+
+        # Collect time points per residue
+        residue_times = defaultdict(list)
+        for ev in profile.events:
+            if ev.protein_residue in top_residues:
+                residue_times[ev.protein_residue].append(ev.time_ns)
+
+        if not residue_times:
+            return go.Figure()
+
+        # Determine time bins
+        all_times = sorted(set(t for times in residue_times.values() for t in times))
+        t_min, t_max = all_times[0], all_times[-1]
+        n_bins = min(100, len(all_times))
+        bin_edges = np.linspace(t_min, t_max + 1e-9, n_bins + 1)
+
+        # Build occupancy matrix
+        z = np.zeros((len(top_residues), n_bins))
+        for i, residue in enumerate(top_residues):
+            times = np.array(residue_times.get(residue, []))
+            if len(times) == 0:
+                continue
+            hist, _ = np.histogram(times, bins=bin_edges)
+            z[i] = (hist > 0).astype(float)
+
+        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2.0
+
+        fig = go.Figure(data=go.Heatmap(
+            z=z, x=np.round(bin_centers, 1), y=top_residues,
+            colorscale=[[0, "white"], [1, "#2c3e50"]],
+            showscale=False,
+            hovertemplate="Residue: %{y}<br>Time: %{x:.1f} ns<br>Present: %{z}<extra></extra>",
+        ))
+
+        fig.update_layout(
+            title="Interaction Persistence Heatmap",
+            xaxis_title="Time (ns)", yaxis_title="Residue",
+            height=max(400, 25 * len(top_residues)),
+            template=self.template,
+            margin=dict(l=130),
+        )
+
+        return fig
+
     # ── Original methods ────────────────────────────────────────────
 
     def interaction_frequency_heatmap(self, interaction_profile) -> go.Figure:

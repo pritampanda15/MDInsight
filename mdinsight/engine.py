@@ -494,18 +494,34 @@ class MDInsight:
                     label="Energy Hotspots"
                 )
 
-        # ── 6. Interaction Fingerprints ─────────────────────────────
+        # ── 6. Interaction Fingerprints & Persistence ─────────────────
+        fp_figs = []
+        try:
+            fp_figs.append(TemporalViz.fingerprint_heatmap(self.fingerprinter))
+        except Exception:
+            pass
+        try:
+            gantt = TemporalViz.interaction_persistence_gantt(self.interaction_analyzer)
+            if gantt.data:
+                fp_figs.append(gantt)
+        except Exception:
+            pass
+        try:
+            persist_hm = self.dashboard.interaction_persistence_heatmap(self.interaction_analyzer)
+            if persist_hm.data:
+                fp_figs.append(persist_hm)
+        except Exception:
+            pass
+
         report.add_section(
-            "Interaction Fingerprint Evolution",
-            "Binary interaction patterns over the trajectory timeline.",
-            figures=[
-                TemporalViz.fingerprint_heatmap(self.fingerprinter),
-                TemporalViz.interaction_persistence_gantt(self.interaction_analyzer),
-            ],
+            "Interaction Fingerprint Evolution & Persistence",
+            "Binary interaction patterns over the trajectory timeline and per-residue persistence.",
+            figures=fp_figs,
         )
         report.add_insight_box(
-            "Dark bands show persistent contacts. Vertical transitions in the heatmap "
-            "indicate binding mode changes. The Gantt chart below shows temporal presence of key residue contacts.",
+            "Dark bands in the fingerprint heatmap show persistent contacts. Vertical transitions "
+            "indicate binding mode changes. The Gantt timeline shows temporal presence of key residue "
+            "contacts color-coded by interaction type. The persistence heatmap shows occupancy over time bins.",
             label="Temporal Pattern"
         )
 
